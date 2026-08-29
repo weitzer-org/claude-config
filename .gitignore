@@ -1,0 +1,11 @@
+# Never commit credentials or machine state from ~/.claude
+.credentials.json
+.claude.json
+settings.local.json
+sessions/
+projects/
+history.jsonl
+shell-snapshots/
+session-env/
+todos/
+statsig/

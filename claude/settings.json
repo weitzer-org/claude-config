@@ -1,0 +1,52 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__cloudflare__execute"
+    ],
+    "defaultMode": "auto"
+  },
+  "effortLevel": "high",
+  "remoteControlAtStartup": true,
+  "inputNeededNotifEnabled": true,
+  "agentPushNotifEnabled": true,
+  "env": {
+    "PATH": "/home/bweitzer/.local/bin:/usr/local/go/bin:/home/bweitzer/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+  },
+  "enabledPlugins": {
+    "gopls-lsp@claude-plugins-official": true,
+    "typescript-lsp@claude-plugins-official": true
+  },
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node /home/bweitzer/.claude/hooks/escalation-reminder.js",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node /home/bweitzer/.claude/hooks/verify-edit.js go",
+            "timeout": 120,
+            "statusMessage": "gofmt + go vet"
+          },
+          {
+            "type": "command",
+            "command": "node /home/bweitzer/.claude/hooks/verify-edit.js ts",
+            "timeout": 180,
+            "asyncRewake": true,
+            "statusMessage": "tsc --noEmit"
+          }
+        ]
+      }
+    ]
+  }
+}
