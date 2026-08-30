@@ -66,11 +66,35 @@ carries machine-local state.
 On a new machine, install the toolchain first:
 
 ```bash
+# Go LSP + linter
 go install golang.org/x/tools/gopls@latest
 go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest
+
+# TypeScript LSP — the plugin invokes `typescript-language-server`, which is a
+# separate npm package from `typescript`/`tsserver`. Without it the TS LSP
+# registers and then silently does nothing.
+npm install -g typescript-language-server typescript
+ln -sf "$(npm root -g)/../typescript-language-server" ~/.local/bin/   # if nvm's bin isn't on PATH
 ```
 
 then fix the paths in `settings.json` to match.
+
+### Verifying the LSPs are actually usable
+
+`enabledPlugins` in `settings.json` only registers a plugin — it does not
+check that the binary it invokes exists, and a missing one fails **silently**.
+Confirm against the exact PATH `settings.json` sets:
+
+```bash
+for b in gopls typescript-language-server node; do
+  printf '%-28s %s\n' "$b" "$(command -v $b || echo MISSING)"
+done
+```
+
+`golangci-lint` is deliberately **not** wired into the PostToolUse hook — it
+takes seconds per package, too slow to run on every edit. `go vet` covers the
+fast, high-value checks there. Run `golangci-lint run` by hand before opening
+a PR on a Go repo.
 
 ## What is deliberately not here
 

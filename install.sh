@@ -24,5 +24,8 @@ else
   echo "installed $DEST/settings.json"
 fi
 
+# A registered LSP plugin whose binary is missing fails silently — check explicitly.
 command -v gopls >/dev/null || echo "WARN: gopls not on PATH — go install golang.org/x/tools/gopls@latest"
+command -v typescript-language-server >/dev/null || echo "WARN: typescript-language-server not on PATH — npm install -g typescript-language-server typescript"
 command -v node  >/dev/null || echo "WARN: node not on PATH — the hooks parse stdin with node and will no-op without it"
+command -v golangci-lint >/dev/null || echo "note: golangci-lint not on PATH (optional; manual pre-PR use, not wired into hooks)"
