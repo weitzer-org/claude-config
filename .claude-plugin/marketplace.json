@@ -1,0 +1,12 @@
+{
+  "name": "weitzer",
+  "description": "Private Claude Code config for weitzer-org projects",
+  "owner": { "name": "weitzer-org" },
+  "plugins": [
+    {
+      "name": "claude-config",
+      "source": "./claude",
+      "description": "Model-pinned subagents: scout, test-runner, reviewer, pr-triage, planner, security-reviewer, opus-verifier, fable-reviewer"
+    }
+  ]
+}

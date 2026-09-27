@@ -1,0 +1,62 @@
+# Opens a PR in every repo listed in targets.txt when agents or rules change,
+# so cloud sessions (which only see committed files) stay current.
+#
+# Needs a repo secret TOOLKIT_SYNC_TOKEN: a fine-grained PAT with
+# Contents: read/write and Pull requests: read/write on the target repos.
+# The default GITHUB_TOKEN can only reach this repo. Without the secret the
+# job logs a warning and exits cleanly.
+name: Propagate to projects
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "claude/agents/**"
+      - "claude/rules/**"
+      - "sync-project.sh"
+      - "targets.txt"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  propagate:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.TOOLKIT_SYNC_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Open sync PRs
+        run: |
+          if [ -z "$GH_TOKEN" ]; then
+            echo "::warning::TOOLKIT_SYNC_TOKEN is not set; skipping propagation"
+            exit 0
+          fi
+          gh auth setup-git
+          rev="$(git rev-parse --short=12 HEAD)"
+          branch="claude-config-sync/$rev"
+          status=0
+          while read -r repo; do
+            (
+              set -euo pipefail
+              dir="$(mktemp -d)"
+              gh repo clone "$repo" "$dir" -- --depth 1
+              ./sync-project.sh "$dir"
+              cd "$dir"
+              if [ -z "$(git status --porcelain -- .claude)" ]; then
+                echo "$repo: up to date"
+                exit 0
+              fi
+              git checkout -b "$branch"
+              git add .claude
+              git -c user.name="claude-config-sync" -c user.email="claude-config-sync@users.noreply.github.com" \
+                commit -m "Sync Claude agents and rules from claude-config@$rev"
+              git push -u origin "$branch"
+              gh pr create --repo "$repo" --head "$branch" \
+                --title "Sync Claude agents and rules from claude-config@$rev" \
+                --body "Automated sync from weitzer-org/claude-config@$rev via \`sync-project.sh\`. Edit agents and rules upstream in claude-config, not in this repo."
+            ) || { echo "::error::sync failed for $repo"; status=1; }
+          done < <(grep -Ev '^[[:space:]]*(#|$)' targets.txt)
+          exit $status

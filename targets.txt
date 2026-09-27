@@ -1,0 +1,3 @@
+# Project repos that get claude/agents and claude/rules vendored into .claude/
+# by .github/workflows/propagate.yml. One owner/repo per line.
+weitzer-org/sound-profile-builder
