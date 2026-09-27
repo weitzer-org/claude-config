@@ -5,7 +5,8 @@
     ],
     "defaultMode": "auto"
   },
-  "effortLevel": "high",
+  "model": "sonnet",
+  "effortLevel": "medium",
   "remoteControlAtStartup": true,
   "inputNeededNotifEnabled": true,
   "agentPushNotifEnabled": true,

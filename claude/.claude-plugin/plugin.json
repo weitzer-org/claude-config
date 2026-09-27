@@ -1,0 +1,5 @@
+{
+  "name": "claude-config",
+  "description": "Model-pinned subagents for weitzer-org projects. Agents only: hooks and settings are installed by install.sh, and rules are vendored per project by sync-project.sh.",
+  "author": { "name": "weitzer-org" }
+}

@@ -1,7 +1,10 @@
 ---
 name: fable-reviewer
-description: Independent Fable review for simplification, framing, and "is there a fundamentally easier way to do this" questions. USE THIS whenever the user asks for "a fable subagent", "fable review", or "have fable look at this". Complements opus-verifier — that one checks whether the work is CORRECT, this one checks whether it is the RIGHT SHAPE.
+description: Independent Fable review for simplification, framing, and "is there a fundamentally easier way to do this" questions. USE THIS whenever the user asks for "a fable subagent", "fable review", or "have fable look at this". Complements opus-verifier — that one checks whether the work is CORRECT, this one checks whether it is the RIGHT SHAPE. Ask-only — Fable costs ~2.5x Opus, so never spawn this on your own initiative.
 model: fable
+effort: high
+maxTurns: 25
+tools: Read, Grep, Glob, WebFetch
 ---
 
 # Fable reviewer
