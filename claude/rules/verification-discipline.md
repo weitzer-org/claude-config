@@ -25,19 +25,24 @@ to, and what another service can reach on the network:
    so it is visible when the conclusion is judged.
 
 Never silently pick a third option (assert it and move on). A one-line
-command beats a paragraph of plausible inference, and costs a second.
+command beats a paragraph of plausible inference, and costs a second:
+`node -e 'console.log(parseFloat("0..7"))'` would have prevented a wrong
+review comment.
 
 **Standing corollaries.** Each of these has burned a real session:
 
 - **Exhaust every page.** Any list from a paged API is incomplete until
-  proven otherwise. The mechanism differs per client: `gh api` needs
-  `--paginate`; the AWS CLI's `s3api` list operations paginate unless you
+  proven otherwise; never conclude "there are no new comments/findings/objects"
+  from a single call. The mechanism differs per client: `gh api` needs
+  `--paginate` (its default page size of 30 is what hid 12 real comments); the AWS CLI's `s3api` list operations paginate unless you
   pass `--no-paginate`; an SDK `ListObjectsV2` needs its own
   continuation-token loop.
 - **Check a value from `.env`, `.env.example`, or docs before relying on it,
-  and never paste the raw value anywhere.** A placeholder is not a real
-  value, but a value that isn't a placeholder is usually a live secret.
-  Report the derived fact or a masked form.
+  and never paste the raw value anywhere.** A placeholder like
+  `https://<account-id>.r2.cloudflarestorage.com` is not an endpoint, but a
+  value that isn't a placeholder is usually a live secret. Report the derived
+  fact ("the endpoint is real, not the template") or a masked form, never the
+  value itself, in a message, commit, log, or PR comment.
 - **Measurements must be apples-to-apples.** Confirm identical denominators
   and inclusion criteria before reporting a delta across runs.
 - **Say what a test run actually establishes.** Name the suite that ran and
